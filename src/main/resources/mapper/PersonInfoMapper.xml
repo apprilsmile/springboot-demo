@@ -1,0 +1,458 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="com.example.demo.dao.PersonInfoMapper">
+
+    <select id="selectPersonInfoList" parameterType="list" resultType="com.example.demo.entity.PersonInfo">
+        select
+        x.RYBH, x.XM,x.HJDZ_DZMC,y.HMXX_DLYH_XM,x.CJBZ,
+        y.JGXX_GAJGJGDM,
+        y.HMXX_SBCSDM sbcs,
+        y.platform ,
+        y.client_id jrqy,
+        x.XBDM ,
+        x.CYZJ_CYZJDM ,x.CYZJ_ZJHM ,x.HMXX_CJSJ,
+        x.RYFL,
+        x.GJDM,
+        x.MZDM ,x.CSRQ,x.HJDZ_DZMC,x.LXDH1,
+        x.ZJBZ,w.ps_id,
+        y.HMXX_ZYYDM,x.CJBZ
+        from person_info x
+        LEFT JOIN person_iris y on x.RYBH = y.RYBH
+        LEFT JOIN person_particular w on x.RYBH = w.RYBH
+        <where>
+            w.is_deleted = '2'
+            and w.is_id = #{isId,jdbcType=VARCHAR}
+            and x.RYBH in
+            <foreach item="item" index="index" collection="rybhs" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+        order by x.HMXX_CJSJ desc ;
+    </select>
+
+    <select id="getCountBySpecial" parameterType="map" resultType="long">
+        select
+        count(0)
+        from person_info x
+        LEFT JOIN person_particular w on x.RYBH = w.RYBH
+        <where>
+            x.is_deleted='2'
+            and w.is_deleted = '2'
+            <if test="xm != null and xm != ''">
+                and x.XM like #{xm,jdbcType=VARCHAR}
+            </if>
+            <if test=" xbdm != null and xbdm != ''">
+                and x.XBDM= #{xbdm,jdbcType=VARCHAR}
+            </if>
+            <if test=" cyzjdm != null and cyzjdm != ''">
+                and x.CYZJ_CYZJDM= #{cyzjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="zjhm != null and zjhm != ''">
+                and x.CYZJ_ZJHM like #{zjhm,jdbcType=VARCHAR}
+            </if>
+            <if test="ryfl != null and ryfl != ''">
+                and x.RYFL= #{ryfl,jdbcType=VARCHAR}
+            </if>
+            <if test=" gjdm != null and gjdm != ''">
+                and x.GJDM= #{gjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="mzdm != null and mzdm != ''">
+                and x.MZDM = #{mzdm,jdbcType=VARCHAR}
+            </if>
+            <if test="cbcs != null and cbcs != ''">
+                and x.HMXX_SBCSDM = #{cbcs,jdbcType=VARCHAR}
+            </if>
+            <if test="platform != null and platform != ''">
+                and x.platform = #{platform,jdbcType=VARCHAR}
+            </if>
+            <if test="isId != null and isId != ''">
+                and w.is_id= #{isId,jdbcType=VARCHAR}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and x.HMXX_CJSJ between #{startDate} and #{endDate}
+            </if>
+            <if test="queryType == 2">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="organizations" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryType == 3">
+                and x.user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 4">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="notifiedBody" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+    <select id="queryPersonInfoList" parameterType="map" resultType="string">
+        select x.RYBH
+        from person_info x
+        <if test="imId != null and imId != ''">
+            LEFT JOIN person_mark z on x.RYBH = z.RYBH
+        </if>
+        <if test="isId != null and isId != ''">
+            LEFT JOIN person_particular w on x.RYBH = w.RYBH
+        </if>
+        <where>
+            <if test="imId != null and imId != ''">
+                and z.is_deleted = '2'
+            </if>
+            <if test="isId != null and isId != ''">
+                and w.is_deleted = '2'
+            </if>
+            <if test="xm != null and xm != ''">
+                and x.XM like #{xm,jdbcType=VARCHAR}
+            </if>
+            <if test=" xbdm != null and xbdm != ''">
+                and x.XBDM= #{xbdm,jdbcType=VARCHAR}
+            </if>
+            <if test=" cyzjdm != null and cyzjdm != ''">
+                and x.CYZJ_CYZJDM= #{cyzjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="zjhm != null and zjhm != ''">
+                and x.CYZJ_ZJHM like #{zjhm,jdbcType=VARCHAR}
+            </if>
+            <if test="sbcs != null and sbcs != ''">
+                and x.HMXX_SBCSDM = #{sbcs,jdbcType=VARCHAR}
+            </if>
+            <if test="platform != null and platform != ''">
+                and x.platform = #{platform,jdbcType=VARCHAR}
+            </if>
+            <if test="ryfl != null and ryfl != ''">
+                and x.RYFL= #{ryfl,jdbcType=VARCHAR}
+            </if>
+            <if test=" gjdm != null and gjdm != ''">
+                and x.GJDM= #{gjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="mzdm != null and mzdm != ''">
+                and x.MZDM = #{mzdm,jdbcType=VARCHAR}
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                and x.is_deleted= #{isDeleted,jdbcType=VARCHAR}
+            </if>
+            <if test="uploadStatus != null and uploadStatus != ''">
+                and x.upload_status= #{uploadStatus}
+            </if>
+            <if test="jgdm != null and jgdm != ''">
+                and x.JGXX_GAJGJGDM= #{jgdm}
+            </if>
+            <if test="isId != null and isId != ''">
+                and w.is_id= #{isId,jdbcType=VARCHAR}
+            </if>
+            <if test="imId != null and imId != ''">
+                and z.im_id= #{imId,jdbcType=VARCHAR}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and x.HMXX_CJSJ between #{startDate} and #{endDate}
+            </if>
+            <if test="startMils != null and startMils != ''">
+                and x.upload_date between #{startMils} and #{endMils}
+            </if>
+            <if test="queryType == 2">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="organizations" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryType == 3">
+                and x.user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 4">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="notifiedBody" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by x.HMXX_CJSJ desc
+        limit ${page},${limit};
+    </select>
+
+    <select id="selectPersonListCount" parameterType="map" resultType="long">
+        select
+        count(0)
+        from person_info x
+        <if test="imId != null and imId != ''">
+            LEFT JOIN person_mark z on x.RYBH = z.RYBH
+        </if>
+        <if test="isId != null and isId != ''">
+            LEFT JOIN person_particular w on x.RYBH = w.RYBH
+        </if>
+        <where>
+            <if test="imId != null and imId != ''">
+                and z.is_deleted = '2'
+            </if>
+            <if test="isId != null and isId != ''">
+                and w.is_deleted = '2'
+            </if>
+            <if test="xm != null and xm != ''">
+                and x.XM like #{xm,jdbcType=VARCHAR}
+            </if>
+            <if test=" xbdm != null and xbdm != ''">
+                and x.XBDM= #{xbdm,jdbcType=VARCHAR}
+            </if>
+            <if test=" cyzjdm != null and cyzjdm != ''">
+                and x.CYZJ_CYZJDM= #{cyzjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="zjhm != null and zjhm != ''">
+                and x.CYZJ_ZJHM like #{zjhm,jdbcType=VARCHAR}
+            </if>
+            <if test="ryfl != null and ryfl != ''">
+                and x.RYFL= #{ryfl,jdbcType=VARCHAR}
+            </if>
+            <if test=" gjdm != null and gjdm != ''">
+                and x.GJDM= #{gjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="mzdm != null and mzdm != ''">
+                and x.MZDM = #{mzdm,jdbcType=VARCHAR}
+            </if>
+            <if test="sbcs != null and sbcs != ''">
+                and x.HMXX_SBCSDM = #{sbcs,jdbcType=VARCHAR}
+            </if>
+            <if test="platform != null and platform != ''">
+                and x.platform = #{platform,jdbcType=VARCHAR}
+            </if>
+            <if test="isDeleted != null and isDeleted != ''">
+                and x.is_deleted= #{isDeleted,jdbcType=VARCHAR}
+            </if>
+            <if test="uploadStatus != null and uploadStatus != ''">
+                and x.upload_status= #{uploadStatus}
+            </if>
+            <if test="jgdm != null and jgdm != ''">
+                and x.JGXX_GAJGJGDM= #{jgdm}
+            </if>
+            <if test="isId != null and isId != ''">
+                and w.is_id= #{isId,jdbcType=VARCHAR}
+            </if>
+            <if test="imId != null and imId != ''">
+                and z.im_id= #{imId,jdbcType=VARCHAR}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and x.HMXX_CJSJ between #{startDate} and #{endDate}
+            </if>
+            <if test="startMils != null and startMils != ''">
+                and x.upload_date between #{startMils} and #{endMils}
+            </if>
+            <if test="queryType == 2">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="organizations" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryType == 3">
+                and x.user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 4">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="notifiedBody" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectPersonInfoListForAdd" parameterType="map" resultType="com.example.demo.entity.PersonInfo">
+        select
+        RYBH,XM, XBDM ,CYZJ_CYZJDM ,CYZJ_ZJHM , RYFL ,GJDM,MZDM ,HMXX_SBXH
+        from person_info
+        <where>
+            RYBH not in (select RYBH from person_particular where is_id = #{isId } and is_deleted = '2' )
+            and is_deleted='2'
+            <if test="xm != null and xm != ''">
+                and XM like #{xm,jdbcType=VARCHAR}
+            </if>
+            <if test=" xbdm != null and xbdm != ''">
+                and XBDM= #{xbdm,jdbcType=VARCHAR}
+            </if>
+            <if test=" cyzjdm != null and cyzjdm != ''">
+                and CYZJ_CYZJDM= #{cyzjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="zjhm != null and zjhm != ''">
+                and CYZJ_ZJHM like #{zjhm,jdbcType=VARCHAR}
+            </if>
+            <if test="ryfl != null and ryfl != ''">
+                and RYFL= #{ryfl,jdbcType=VARCHAR}
+            </if>
+            <if test=" gjdm != null and gjdm != ''">
+                and GJDM= #{gjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="mzdm != null and mzdm != ''">
+                and MZDM = #{mzdm,jdbcType=VARCHAR}
+            </if>
+            <if test="sblxdm != null and sblxdm != ''">
+                and HMXX_SBXH = #{sblxdm,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 2">
+                and JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="organizations" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryType == 3">
+                and user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 4">
+                and JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="notifiedBody" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by HMXX_CJSJ desc
+        limit ${page},${limit};
+    </select>
+    <select id="getCountBySpecialForAdd" parameterType="map" resultType="long">
+        select count(1)
+        from person_info
+        <where>
+            RYBH not in (select RYBH from person_particular  where is_id = #{isId } and is_deleted = '2' )
+            and is_deleted='2'
+            <if test="xm != null and xm != ''">
+                and XM like #{xm,jdbcType=VARCHAR}
+            </if>
+            <if test=" xbdm != null and xbdm != ''">
+                and XBDM= #{xbdm,jdbcType=VARCHAR}
+            </if>
+            <if test=" cyzjdm != null and cyzjdm != ''">
+                and CYZJ_CYZJDM= #{cyzjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="zjhm != null and zjhm != ''">
+                and CYZJ_ZJHM like #{zjhm,jdbcType=VARCHAR}
+            </if>
+            <if test="ryfl != null and ryfl != ''">
+                and RYFL= #{ryfl,jdbcType=VARCHAR}
+            </if>
+            <if test=" gjdm != null and gjdm != ''">
+                and GJDM= #{gjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="mzdm != null and mzdm != ''">
+                and MZDM = #{mzdm,jdbcType=VARCHAR}
+            </if>
+            <if test="sblxdm != null and sblxdm != ''">
+                and HMXX_SBXH = #{sblxdm,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 2">
+                and JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="organizations" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryType == 3">
+                and user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 4">
+                and JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="notifiedBody" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+    </select>
+
+
+    <select id="selectRybhsByJgdm" parameterType="map" resultType="string">
+        select x.RYBH
+        from person_info x
+        <where>
+            x.upload_status = #{ruleType}
+            and x.is_deleted='2'
+            and x.JGXX_GAJGJGDM in
+            <foreach item="item" index="index" collection="organizations" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+    </select>
+
+
+    <select id="selectPersonInfos" parameterType="list" resultType="com.example.demo.entity.PersonInfo">
+        select
+        x.RYBH, x.XM,x.upload_date,x.upload_status,y.HMXX_DLYH_XM,x.cjjg,
+        y.JGXX_GAJGJGDM,
+        y.HMXX_SBCSDM sbcs,
+        y.platform ,
+        y.client_id jrqy,
+        x.upload_result ,
+        x.XBDM ,
+        x.CYZJ_CYZJDM ,x.CYZJ_ZJHM ,x.HMXX_CJSJ,
+        x.RYFL ,
+        x.GJDM ,
+        x.MZDM ,x.ZJBZ,x.CJBZ,
+        y.HMXX_ZYYDM,x.is_deleted,x.linkage_date
+        from person_info x
+        LEFT JOIN person_iris y on x.RYBH = y.RYBH
+        <where>
+            x.RYBH in
+            <foreach item="item" index="index" collection="rybhs" open="(" separator="," close=")">
+                #{item}
+            </foreach>
+        </where>
+        order by x.HMXX_CJSJ desc
+    </select>
+
+    <select id="queryRybhForSpecial" parameterType="map" resultType="string">
+        select
+        x.RYBH
+        from person_info x
+        LEFT JOIN person_particular w on x.RYBH = w.RYBH
+        <where>
+            x.is_deleted='2'
+            and w.is_deleted = '2'
+            <if test="xm != null and xm != ''">
+                and x.XM like #{xm,jdbcType=VARCHAR}
+            </if>
+            <if test=" xbdm != null and xbdm != ''">
+                and x.XBDM= #{xbdm,jdbcType=VARCHAR}
+            </if>
+            <if test=" cyzjdm != null and cyzjdm != ''">
+                and x.CYZJ_CYZJDM= #{cyzjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="zjhm != null and zjhm != ''">
+                and x.CYZJ_ZJHM like #{zjhm,jdbcType=VARCHAR}
+            </if>
+            <if test="ryfl != null and ryfl != ''">
+                and x.RYFL= #{ryfl,jdbcType=VARCHAR}
+            </if>
+            <if test=" gjdm != null and gjdm != ''">
+                and x.GJDM= #{gjdm,jdbcType=VARCHAR}
+            </if>
+            <if test="mzdm != null and mzdm != ''">
+                and x.MZDM = #{mzdm,jdbcType=VARCHAR}
+            </if>
+            <if test="isId != null and isId != ''">
+                and w.is_id= #{isId,jdbcType=VARCHAR}
+            </if>
+            <if test="cbcs != null and cbcs != ''">
+                and x.HMXX_SBCSDM = #{cbcs,jdbcType=VARCHAR}
+            </if>
+            <if test="platform != null and platform != ''">
+                and x.platform = #{platform,jdbcType=VARCHAR}
+            </if>
+            <if test="startDate != null and startDate != ''">
+                and x.HMXX_CJSJ between #{startDate} and #{endDate}
+            </if>
+            <if test="queryType == 2">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="organizations" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+            <if test="queryType == 3">
+                and x.user_id = #{userId,jdbcType=VARCHAR}
+            </if>
+            <if test="queryType == 4">
+                and x.JGXX_GAJGJGDM in
+                <foreach item="item" index="index" collection="notifiedBody" open="(" separator="," close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        order by x.HMXX_CJSJ desc
+        limit ${page},${limit};
+    </select>
+</mapper>

@@ -1,0 +1,50 @@
+spring:
+  datasource:
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    url: jdbc:mysql://10.2.1.35:3310/irisking-cloud-1?useUnicode=true&characterEncoding=utf8&autoReconnect=true&zeroDateTimeBehavior=convertToNull&transformedBitIsBoolean=true&serverTimezone=Asia/Shanghai
+    username: root
+    password: root123
+    platform: mysql
+    type: com.alibaba.druid.pool.DruidDataSource
+  application:
+    name: springboot-sample
+    servlet:
+      multipart:
+        enabled: true
+        max-file-size: 20MB  #单个文件的最大上限
+        max-request-size: 100MB #单个请求的文件总大小上限
+  profiles:
+    include: common
+  redis:
+    #指定连接工厂使用的Database index，默认为: 0
+    database: 0
+    #指定Redis server host，默认为: localhost
+    host: 10.2.1.35
+    #指定redis服务端端口，默认: 6379
+    port: 26379
+    #指定Redis server的密码
+    password:
+    #指定连接超时时间，毫秒单位，默认为0
+    timeout: 5000
+    pool:
+      #指定连接池最大的活跃连接数，-1表示无限，默认为8
+      max-active: 8
+      #指定连接池最大的空闲连接数，-1表示无限，默认为8
+      max-idle: 8
+      #指定当连接池耗尽时，新获取连接需要等待的最大时间，以毫秒单位，-1表示无限等待
+      max-wait: -1
+      #指定连接池中空闲连接的最小数量，默认为0
+      min-idle: 2
+
+# 配置slq打印日志
+mybatis-plus:
+  configuration:
+    log-impl: org.apache.ibatis.logging.stdout.StdOutImpl
+  mapper-locations: classpath:/mapper/**/*.xml
+
+server:
+  port: 8081
+  servlet:
+    context-path: /
+  ssl:
+    enabled: false
