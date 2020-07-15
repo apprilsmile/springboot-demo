@@ -48,3 +48,5 @@ server:
     context-path: /
   ssl:
     enabled: false
+
+test: test
